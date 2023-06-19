@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation';
+import { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -18,8 +19,7 @@ import { Input } from "@/components/ui/input";
 import { AlertCircle, FileWarning, Terminal } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
-
-const SERVER_DOMAIN = process.env.NEXT_PUBLIC_SERVER_DOMAIN as unknown as URL
+const SERVER_DOMAIN = process.env.NEXT_PUBLIC_SERVER_DOMAIN as unknown as URL;
 
 const signUpSchema = z
   .object({
@@ -30,9 +30,7 @@ const signUpSchema = z
     email: z
       .string({ required_error: "required" })
       .email("Invalid email address"),
-    password: z
-      .string({ required_error: "required" })
-      .min(8, "Too short"),
+    password: z.string({ required_error: "required" }).min(8, "Too short"),
     passwordConfirmation: z.string({
       required_error: "Password Confirmation is required",
     }),
@@ -42,12 +40,14 @@ const signUpSchema = z
     path: ["passwordConfirmation"],
   });
 
-type SignUpInput = z.infer<typeof signUpSchema>;
+type SignupInput = z.infer<typeof signUpSchema>;
 
-export default function SignUpForm() {
-  const router = useRouter()
-  const [registerError, setRegisterError] = useState("Bad things have happened")
-  const form = useForm<SignUpInput>({
+export default function SignupForm() {
+  const router = useRouter();
+  const [registerError, setRegisterError] = useState(
+    "Bad things have happened"
+  );
+  const form = useForm<SignupInput>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
       name: "",
@@ -57,35 +57,29 @@ export default function SignUpForm() {
     },
   });
 
-  async function onSubmit(values: SignUpInput) {
-    const createUser = `${SERVER_DOMAIN}/api/v1/users`
+  async function onSubmit(values: SignupInput) {
+    const createUser = `${SERVER_DOMAIN}/api/v1/users`;
     try {
       const response = await fetch(createUser, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-    body: JSON.stringify(values)
-      })
+        body: JSON.stringify(values),
+      });
       if (response.status !== 200) {
-        const error = await response.json()
+        const error = await response.json();
         form.setError("email", {
-          type:"custom", message: error.message
-        })
+          type: "custom",
+          message: error.message,
+        });
         //@ts-ignore
         throw new Error(error.message);
       }
-    form.reset();
-      router.push('/')
-
-    }
-    catch (error: any) {
-    }
-
-
-
-}
-
+      form.reset();
+      router.push("/login");
+    } catch (error: any) {}
+  }
 
   return (
     <>
@@ -129,7 +123,7 @@ export default function SignUpForm() {
               <FormItem>
                 <FormLabel>Password *</FormLabel>
                 <FormControl>
-                  <Input  placeholder="enter a strong password" {...field} />
+                  <Input placeholder="enter a strong password" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -142,16 +136,23 @@ export default function SignUpForm() {
               <FormItem>
                 <FormLabel>Confirm Password *</FormLabel>
                 <FormControl>
-                  <Input  placeholder="re-enter password" {...field} />
+                  <Input placeholder="re-enter password" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
           <Button type="submit">Submit</Button>
+          <p>
+            Have an account?{" "}
+            <Link href={"/login"}>
+              <span className="italic text-primary hover:underline text-purple-800 font-bold text-lg">
+                Log In
+              </span>
+            </Link>
+          </p>
         </form>
       </Form>
     </>
   );
 }
-
