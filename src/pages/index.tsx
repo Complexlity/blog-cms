@@ -1,8 +1,6 @@
-"use client";
-
 import type { GetServerSideProps, NextPage } from "next";
 import useSwr from "swr";
-import fetcher from 
+import fetcher from "@/utils/fetching"
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
