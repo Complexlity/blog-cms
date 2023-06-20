@@ -19,7 +19,7 @@ interface User {
 
 const Home: NextPage<{ fallbackData: User | null }> = ({ fallbackData }) => {
   return (
-    <div>Welcome {JSON.stringify(fallbackData!.name, null, 2)}
+    <div>Welcome {JSON.stringify(fallbackData!, null, 2)}
       <HomePage/>
     </div>
     )
