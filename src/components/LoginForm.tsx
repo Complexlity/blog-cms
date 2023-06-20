@@ -19,6 +19,7 @@ import { Input } from "@/components/ui/input";
 import { AlertCircle } from "lucide-react"
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import fetcher from "@/utils/fetcher";
 
 const SERVER_DOMAIN = process.env.NEXT_PUBLIC_SERVER_DOMAIN as unknown as URL;
 
@@ -46,17 +47,11 @@ export default function LoginForm() {
     setLoginError(null)
   }
   async function onSubmit(values: CreateSessionInput) {
-    const logInUser = `${SERVER_DOMAIN}/api/v1/sessions`;
+    const loginUser = `${SERVER_DOMAIN}/api/v1/sessions`;
     try {
-      const response = await fetch(logInUser, {
-        method: "POST",
-        body: JSON.stringify(values),
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-      });
-      if (response.status !== 200) {
+      const response = await fetcher(loginUser, {}, 'POST', values)
+
+      if (response && response.status !== 200) {
         const error = await response.json();
         //@ts-ignore
         throw new Error(error.message);

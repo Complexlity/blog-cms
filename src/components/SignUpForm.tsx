@@ -18,6 +18,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { AlertCircle, FileWarning, Terminal } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import fetcher from "@/utils/fetcher";
 
 const SERVER_DOMAIN = process.env.NEXT_PUBLIC_SERVER_DOMAIN as unknown as URL;
 
@@ -60,14 +61,8 @@ export default function SignupForm() {
   async function onSubmit(values: SignupInput) {
     const createUser = `${SERVER_DOMAIN}/api/v1/users`;
     try {
-      const response = await fetch(createUser, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(values),
-      });
-      if (response.status !== 200) {
+       const response = await fetcher(createUser, {}, "POST", values);
+      if (response && response.status !== 200) {
         const error = await response.json();
         form.setError("email", {
           type: "custom",

@@ -1,8 +1,11 @@
+'use client'
+
 import type { GetServerSideProps, NextPage } from "next";
 import useSwr from "swr";
-import fetcher from "@/utils/fetching"
-import { useRouter } from "next/router";
+import fetcher from "../utils/fetching";
+import { useRouter } from 'next/router'
 import { useEffect, useState } from "react";
+import LoginForm from "@/components/LoginForm";
 
 interface User {
   _id: string;
@@ -16,31 +19,24 @@ interface User {
   exp: number;
 }
 
-const Home: NextPage<{ fallbackData: User }> = ({ fallbackData }) => {
-  const router = useRouter();
-  const url = `${process.env.NEXT_PUBLIC_SERVER_DOMAIN}/api/v1/me`;
-  const [user, setUser] = useState(null);
+const Home: NextPage<{ fallbackData: User | null }> = ({ fallbackData }) => {
+  const router = useRouter()
   useEffect(() => {
-    const fetchData = async () => {
-      const response = await fetch(url, {
-        credentials: "include",
-      });
-      const result = await response.json();
-      return result
-    };
-    const data = fetchData();
-    if (!data) router.push('/login')
-    else(setUser(data))
+    if (fallbackData === null) router.push('/login')
+  }, [router])
 
-  }, []);
+  if(fallbackData)
+  return (
+    <div>Welcome {fallbackData.name}</div>
+    )
+  else return (<div></div>)
 
-  return <div>Welcome {JSON.stringify(user)}</div>;
 };
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
+
   const data = await fetcher(
-    `${process.env.NEXT_PUBLIC_SERVER_DOMAIN}/api/v1/me`,
-    {
+    `${process.env.NEXT_PUBLIC_SERVER_DOMAIN}/api/v1/me`, {
       ...context.req.headers,
     }
   );
