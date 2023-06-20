@@ -1,11 +1,9 @@
 'use client'
 
 import type { GetServerSideProps, NextPage } from "next";
-import useSwr from "swr";
+
 import fetcher from "../utils/fetching";
-import { useRouter } from 'next/router'
-import { useEffect, useState } from "react";
-import LoginForm from "@/components/LoginForm";
+import HomePage from "@/components/HomePage";
 
 interface User {
   _id: string;
@@ -20,17 +18,11 @@ interface User {
 }
 
 const Home: NextPage<{ fallbackData: User | null }> = ({ fallbackData }) => {
-  const router = useRouter()
-  useEffect(() => {
-    if (fallbackData === null) router.push('/login')
-  }, [router])
-
-  if(fallbackData)
   return (
-    <div>Welcome {fallbackData.name}</div>
+    <div>Welcome {JSON.stringify(fallbackData!.name, null, 2)}
+      <HomePage/>
+    </div>
     )
-  else return (<div></div>)
-
 };
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
@@ -40,6 +32,15 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       ...context.req.headers,
     }
   );
+  if (!data)
+    return {
+      redirect: {
+        destination: '/login',
+        permanent: false,
+      },
+    }
+
+
   return { props: { fallbackData: data } };
 };
 
