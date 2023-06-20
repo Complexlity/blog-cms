@@ -5,6 +5,7 @@ import useSwr from "swr";
 import fetcher from "../utils/fetching";
 import { useRouter } from 'next/router'
 import { useEffect, useState } from "react";
+import LoginForm from "@/components/LoginForm";
 
 interface User {
   _id: string;
@@ -18,24 +19,17 @@ interface User {
   exp: number;
 }
 
-const Home: NextPage<{ fallbackData: User }> = ({ fallbackData }) => {
+const Home: NextPage<{ fallbackData: User | null }> = ({ fallbackData }) => {
   const router = useRouter()
-  const url = `${process.env.NEXT_PUBLIC_SERVER_DOMAIN}/api/v1/me`
-  const [user, setUser]  = useState(null)
   useEffect(() => {
- const fetchData =    async () => {
-      const response = await fetch(url, {
-        credentials: "include"
-      })
-      const result = await response.json()
-      setUser(result)
-    }
-    fetchData()
-  }, [])
+    if (fallbackData === null) router.push('/login')
+  }, [router])
 
+  if(fallbackData)
   return (
-    <div>Welcome {JSON.stringify(user)}</div>
-  )
+    <div>Welcome {fallbackData.name}</div>
+    )
+  else return (<div></div>)
 
 };
 
