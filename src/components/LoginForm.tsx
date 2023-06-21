@@ -115,7 +115,7 @@ export default function LoginForm() {
 
           <Button type="submit">Submit</Button>
           <p>
-            Don't have an account?{" "}
+            Don&apos;t have an account?{" "}
             <Link href={"/signup"}>
               <span className="italic text-primary hover:underline text-purple-800 font-bold text-lg">
                 Sign Up
