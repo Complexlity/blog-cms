@@ -1,4 +1,4 @@
-import SignupForm from "@/components/signupForm";
+import SignForm from "@/components/FormSign";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 export default function Signup() {
   return (
     <div className="h-screen w-screen grid content-center gap-4 justify-center items-center">
-      <SignupForm />
+      <SignForm />
     </div>
   );
 }

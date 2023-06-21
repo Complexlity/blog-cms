@@ -41,7 +41,7 @@ const signUpSchema = z
 
 type SignupInput = z.infer<typeof signUpSchema>;
 
-export default function signupForm() {
+export default function SignForm() {
   const router = useRouter();
   const [registerError, setRegisterError] = useState(
     "Bad things have happened"
