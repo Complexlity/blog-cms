@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import Card from "./ui/card";
 
 export default function HomePage({ user, posts }: { user: User, posts: Post[] }) {
-  console.log(posts)
   const router = useRouter();
   async function logout() {
     const url = `${process.env.NEXT_PUBLIC_SERVER_DOMAIN}/sessions`;

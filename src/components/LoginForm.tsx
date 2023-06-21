@@ -50,10 +50,10 @@ export default function LoginForm() {
     const loginUser = `${SERVER_DOMAIN}/sessions`;
     try {
       const response = await fetcher(loginUser, {}, "POST", values);
-
+      //@ts-ignore
       if (response && response.status !== 200) {
-        const error = await response.json();
         //@ts-ignore
+        const error = await response.json();
         throw new Error(error.message);
       }
       form.reset();

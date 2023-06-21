@@ -1,6 +1,20 @@
 import { Post } from "@/lib/types";
+import Link from "next/link";
 
-export default function Card({ post }: {post: Post}) {
+export default function Card({ post }: { post: Post }) {
+
+ function truncateString(str: string, len: number) {
+   if (str.length <= len) {
+     return str;
+   }
+
+   let truncated = str.slice(0, len);
+   truncated = truncated.slice(0, truncated.lastIndexOf(" "));
+   truncated += "...";
+
+   return truncated;
+ }
+
   return (
     <div className="max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
       <a href="#">
@@ -9,10 +23,10 @@ export default function Card({ post }: {post: Post}) {
         </h5>
       </a>
       <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">
-        {post.content.slice(0, 50)}
+        {truncateString(post.content, 50)}
       </p>
-      <a
-        href="#"
+      <Link
+        href={`/posts/${post._id}`}
         className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
       >
         Read more
@@ -29,7 +43,7 @@ export default function Card({ post }: {post: Post}) {
             clip-rule="evenodd"
           ></path>
         </svg>
-      </a>
+      </Link>
     </div>
   );
 }

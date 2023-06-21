@@ -14,7 +14,6 @@ function getHeaders() {
 
 export async function getUser(): Promise<User> {
   const headers = getHeaders();
-
   // Forward the authorization header
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_DOMAIN}/me`, {
