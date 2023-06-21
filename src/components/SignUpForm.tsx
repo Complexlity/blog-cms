@@ -17,7 +17,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import fetcher from "@/lib/fetcher";
-import { User } from "@/lib/types";
 
 const SERVER_DOMAIN = process.env.NEXT_PUBLIC_SERVER_DOMAIN as unknown as URL;
 
@@ -42,7 +41,7 @@ const signUpSchema = z
 
 type SignupInput = z.infer<typeof signUpSchema>;
 
-export default function SignupForm() {
+export default function signupForm() {
   const router = useRouter();
   const [registerError, setRegisterError] = useState(
     "Bad things have happened"
