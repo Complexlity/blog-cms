@@ -16,10 +16,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { AlertCircle } from "lucide-react"
+import { AlertCircle } from "lucide-react";
 
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import fetcher from "@/utils/fetcher";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import fetcher from "@/lib/fetcher";
 
 const SERVER_DOMAIN = process.env.NEXT_PUBLIC_SERVER_DOMAIN as unknown as URL;
 
@@ -33,7 +33,7 @@ const logInSchema = z.object({
 type CreateSessionInput = z.infer<typeof logInSchema>;
 
 export default function LoginForm() {
-  const [loginError, setLoginError] = useState(null)
+  const [loginError, setLoginError] = useState(null);
   const router = useRouter();
   const form = useForm<CreateSessionInput>({
     resolver: zodResolver(logInSchema),
@@ -44,12 +44,12 @@ export default function LoginForm() {
   });
 
   function handleInput() {
-    setLoginError(null)
+    setLoginError(null);
   }
   async function onSubmit(values: CreateSessionInput) {
-    const loginUser = `${SERVER_DOMAIN}/api/v1/sessions`;
+    const loginUser = `${SERVER_DOMAIN}/sessions`;
     try {
-      const response = await fetcher(loginUser, {}, 'POST', values)
+      const response = await fetcher(loginUser, {}, "POST", values);
 
       if (response && response.status !== 200) {
         const error = await response.json();
@@ -59,7 +59,7 @@ export default function LoginForm() {
       form.reset();
       router.push("/");
     } catch (error: any) {
-      setLoginError(error.message)
+      setLoginError(error.message);
     }
   }
 
@@ -69,9 +69,7 @@ export default function LoginForm() {
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
           <AlertTitle>Error</AlertTitle>
-          <AlertDescription>
-            {loginError}
-          </AlertDescription>
+          <AlertDescription>{loginError}</AlertDescription>
         </Alert>
       )}
       <Form {...form}>
@@ -87,7 +85,11 @@ export default function LoginForm() {
               <FormItem>
                 <FormLabel>Email *</FormLabel>
                 <FormControl>
-                  <Input placeholder="your email" {...field} onInput={handleInput} />
+                  <Input
+                    placeholder="your email"
+                    {...field}
+                    onInput={handleInput}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -100,7 +102,11 @@ export default function LoginForm() {
               <FormItem>
                 <FormLabel>Password *</FormLabel>
                 <FormControl>
-                  <Input placeholder="enter your password" {...field} onInput={handleInput} />
+                  <Input
+                    placeholder="enter your password"
+                    {...field}
+                    onInput={handleInput}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>

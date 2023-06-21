@@ -1,31 +1,37 @@
-'use client'
+"use client";
 
+import { Post, User } from "@/lib/types";
+import { useRouter } from "next/navigation";
+import Card from "./ui/card";
 
-import { useRouter } from 'next/navigation'
-
-export default function HomePage() {
-  const router = useRouter()
-
+export default function HomePage({ user, posts }: { user: User, posts: Post[] }) {
+  console.log(posts)
+  const router = useRouter();
   async function logout() {
-    const url = `${process.env.NEXT_PUBLIC_SERVER_DOMAIN}/api/v1/sessions`;
+    const url = `${process.env.NEXT_PUBLIC_SERVER_DOMAIN}/sessions`;
     await fetch(url, {
       method: "DELETE",
       credentials: "include",
-    })
-    router.push('/login')
+    });
+    router.push("/login");
   }
 
-
   return (
-    <nav>
-      <ul>
-        <li>Home</li>
-        <li><button onClick={() => {
-          logout()
-        }}>Logout</button></li>
-        <li></li>
-        <li></li>
-      </ul>
-    </nav>
-  )
+    <>
+      <nav>
+        <ul>
+          <li>Home</li>
+          <li>Hello {user.name} welcome to the club</li>
+          <li>
+            <button onClick={logout}>Logout</button>
+          </li>
+        </ul>
+      </nav>
+      {
+        posts.map((post) => {
+          return <Card key={post._id} post={post} />;
+       })
+      }
+    </>
+  );
 }
