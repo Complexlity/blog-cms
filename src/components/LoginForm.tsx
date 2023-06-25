@@ -25,9 +25,9 @@ const SERVER_DOMAIN = process.env.NEXT_PUBLIC_SERVER_DOMAIN as unknown as URL;
 
 const logInSchema = z.object({
   email: z
-    .string({ required_error: "required" })
+    .string({ required_error: "required" }).trim()
     .email("Invalid email address"),
-  password: z.string({ required_error: "required" }).min(8, "Too short"),
+  password: z.string({ required_error: "required" }).trim().min(8, "Too short"),
 });
 
 type CreateSessionInput = z.infer<typeof logInSchema>;

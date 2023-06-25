@@ -19,6 +19,8 @@ export async function getUser(): Promise<User> {
     const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_DOMAIN}/me`, {
       //@ts-ignore
       headers,
+      credentials: 'include',
+    
     });
     if (!res.ok) throw new Error("User not found");
     return res.json() as unknown as User;

@@ -8,11 +8,18 @@ export default function HomePage({ user, posts }: { user: User | null, posts: Po
   const router = useRouter();
   async function logout() {
     const url = `${process.env.NEXT_PUBLIC_SERVER_DOMAIN}/sessions`;
-    await fetch(url, {
-      method: "DELETE",
-      credentials: "include",
-    });
-    router.push("/login");
+   try {
+
+     await fetch(url, {
+       method: "DELETE",
+       credentials: "include",
+     });
+    } catch (error) {
+      console.log(error)
+
+   } finally {
+      router.push("/login");
+    }
   }
 
   return (

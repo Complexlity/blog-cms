@@ -18,18 +18,21 @@ import {
 import { Input } from "@/components/ui/input";
 import fetcher from "@/lib/fetcher";
 
+
+
 const SERVER_DOMAIN = process.env.NEXT_PUBLIC_SERVER_DOMAIN as unknown as URL;
 
-const signUpSchema = z
+
+const signUpSchema  = z
   .object({
     name: z
       .string({ required_error: "required" })
       .min(2, "Too short")
       .max(40, "Too long"),
     email: z
-      .string({ required_error: "required" })
+      .string({ required_error: "required" }).trim()
       .email("Invalid email address"),
-    password: z.string({ required_error: "required" }).min(8, "Too short"),
+    password: z.string({ required_error: "required" }).trim().min(8, "Too short"),
     passwordConfirmation: z.string({
       required_error: "Password Confirmation is required",
     }),
