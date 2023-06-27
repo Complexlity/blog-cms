@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import {Post} from '@/lib/types'
+import { Post } from '@/lib/types'
 
 export default function Post({ post }: { post: Post }) {
   const router = useRouter()
