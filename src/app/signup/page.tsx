@@ -1,4 +1,4 @@
-import SignForm from "@/components/FormSign";
+import SignForm from "@/app/signup/FormSign";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {

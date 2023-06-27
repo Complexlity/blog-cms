@@ -19,8 +19,8 @@ export async function getUser(): Promise<User> {
     const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_DOMAIN}/me`, {
       //@ts-ignore
       headers,
-      credentials: 'include',
-    
+      credentials: "include",
+      cache: 'force-cache'
     });
     if (!res.ok) throw new Error("User not found");
     return res.json() as unknown as User;
@@ -36,10 +36,30 @@ export async function getPosts(): Promise<Post[]> {
     const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_DOMAIN}/posts`, {
       //@ts-ignore
       headers,
+      credentials: "include",
+      cache: "force-cache",
     });
     if (!res.ok) return []
     return res.json() ;
   } catch (error) {
     return []
+  }
+}
+
+
+export async function getSinglePost(id: string): Promise<Post> {
+  const headers = getHeaders()
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_DOMAIN}/posts/${id}`, {
+      //@ts-ignore
+      headers,
+      credentials: 'include',
+      cache: 'force-cache'
+    })
+    if (!res.ok) throw new Error("User not found");
+    return res.json() as unknown as Post;
+
+  } catch (error) {
+    return redirect("/login");
   }
 }
