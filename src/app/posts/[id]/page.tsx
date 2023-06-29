@@ -1,18 +1,18 @@
 'use client'
 
-import { Button } from '@/components/ui/Button'
+
 import { Input } from '@/components/ui/input'
 import { Post } from '@/lib/types'
 import { useRouter } from 'next/navigation'
 import { Dispatch, SetStateAction, useState } from 'react'
 import { useMutation, useQuery } from 'react-query'
+import { Button } from '@/components/ui/button'
+import { Textarea } from '@/components/ui/textarea'
 
 export default function SinglePost({ params }: { params: { id: string } }) {
   const id = params.id
   const router = useRouter()
-  console.log({id})
   const url = `${process.env.NEXT_PUBLIC_SERVER_DOMAIN}/posts/${id}`
-  console.log({url})
   const { data: post, error } = useQuery({
     queryKey: "post",
     queryFn: async () => {
@@ -47,80 +47,79 @@ export default function SinglePost({ params }: { params: { id: string } }) {
   async function deletePost() {
     if (confirm("Do you want to delete")) {
       const result = mutatePost()
-
     }
   }
 
   if(deleting) return <p>Deleting Post...</p>
 
 
-    if (post) {
+  if (post) {
       return (
            <PostElement post={post} deletePost={deletePost}/>
       );
-    }
+  }
   }
 
-type PostInfo = {
-  title: string,
-  content: string
-  }
 
-const PostElement = ({ post, deletePost }: { post: Post, deletePost: any }) => {
-  const [postInfo, setPostInfo] = useState<PostInfo>({ title: post.title, content: post.content})
+const PostElement = ({ post, deletePost }: { post: Post, deletePost: () => void }) => {
+  const [postInfo, setPostInfo] = useState(post)
   const [isEditing, setIsEditing] = useState(false)
-  const postChanged: boolean = postInfo.content !== post.content
+  const postChanged: boolean = postInfo.content !== post.content && post._id === postInfo._id
   return (
-    <>
+    <div className="flex justify-center py-6 gap-4 px-4">
+      <div className="max-w-[1000px] flex-1 ">
+
       {isEditing ? (
         <EditMode
-          post={postInfo}
-          setPostInfo={setPostInfo}
-          postChanged={postChanged}
+        post={postInfo}
+        setPost={setPostInfo}
+        postChanged={postChanged}
         />
-      ) : (
-        <ViewMode post={postInfo} />
-      )}
+        ) : (
+          <ViewMode post={postInfo} />
+          )}
 
       <div className="Buttons flex gap-4 mt-4">
         <Button variant={"destructive"} onClick={deletePost}>
           Delete
         </Button>
         <Button
-          variant={!isEditing ? "default" : "secondary"}
+          variant={!isEditing ? "default" : "accepted"}
           onClick={setIsEditing.bind(null, !isEditing)}
-        >
+          >
           {!isEditing ? "Edit" : "Done"}
         </Button>
         {postChanged && !isEditing && (
           <Button className="bg-green-600">Publish</Button>
-        )}
+          )}
       </div>
-    </>
+          </div>
+    </div>
   );
-  //   return (
-  //     <>
-  // <h1>Post by: {post.author.name}</h1>
-  //         <h2 className="font-bold text-3xl">{post.title}</h2>
-  //       {isEditing
-  //       ?  < Input value={editable} onChange={(e) => setEditable(e.target.value)} className='max-w-24 w-4/5 text-md' />
-  //       :
-  //         <p className='py-2'>{editable}</p>
-  //       }
-  //       <div className="Buttons flex gap-4 mt-4">
-  //       <Button variant={'destructive'} onClick={deletePost}>Delete</Button>
-  //         <Button variant={!isEditing ? "default" : "secondary"} onClick={setIsEditing.bind(null, !isEditing)}>{!isEditing ? "Edit" : "Done"}</Button>
-  //         {postChanged && !isEditing && <Button className="bg-green-600">Publish</Button>}
-  //       </div>
-  //     </>
-  //   );
+
   }
 
 
-function EditMode({ post, setPostInfo, postChanged }: { post: PostInfo, setPostInfo: Dispatch<SetStateAction<PostInfo>>, postChanged: boolean }) {
-  return <p>Edit Mode</p>
+function EditMode({ post, setPost, postChanged }: { post: Post, setPost: Dispatch<SetStateAction<Post>>, postChanged: boolean }) {
+  return (
+    <div className="text-center grid gap-4 p-2 ">
+      <Input className="text-base " value={post.title} onChange={(e) => {
+        setPost({ ...post, title: e.target.value})
+      }} />
+      <Textarea className="text-base " value={post.content} onChange={(e) => {
+        setPost({ ...post, content: e.target.value})
+      }}/>
+    </div>
+  )
 }
 
-function ViewMode({ post }: { post: PostInfo }) {
-  return <p>View Mode</p>
+function ViewMode({ post }: { post: Post }) {
+  return (<div className="text-center grid gap-4">
+    <header className="flex items-center">
+    <h1 className='flex-1 text-3xl font-bold font-mono tracking-wide'>{post.title}</h1>
+      <span>by <span className='font-bold italic'>{post.author.name}</span></span>
+    </header>
+    <p className="text-xl">{post.content}</p>
+  </div>
+  )
 }
