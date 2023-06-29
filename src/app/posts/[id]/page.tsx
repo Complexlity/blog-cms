@@ -8,6 +8,8 @@ import { Dispatch, SetStateAction, useState } from 'react'
 import { useMutation, useQuery } from 'react-query'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert'
+import { AlertCircle } from 'lucide-react'
 
 export default function SinglePost({ params }: { params: { id: string } }) {
   const id = params.id
@@ -21,8 +23,6 @@ export default function SinglePost({ params }: { params: { id: string } }) {
       return post as unknown as  Post
     }
   })
-  // if (error || !post) router.push('/')
-
 
   const { mutate: mutatePost, isLoading: deleting, isSuccess } = useMutation({
     mutationFn: async () => {
@@ -60,40 +60,103 @@ export default function SinglePost({ params }: { params: { id: string } }) {
   }
   }
 
+type UpdatePost = {
+  id: string,
+  title: string,
+  content: string
+}
+
+
 
 const PostElement = ({ post, deletePost }: { post: Post, deletePost: () => void }) => {
   const [postInfo, setPostInfo] = useState(post)
   const [isEditing, setIsEditing] = useState(false)
-  const postChanged: boolean = postInfo.content !== post.content && post._id === postInfo._id
-  return (
-    <div className="flex justify-center py-6 gap-4 px-4">
-      <div className="max-w-[1000px] flex-1 ">
+  const postChanged: boolean = (postInfo.content !== post.content || postInfo.title !== post.title) && post._id === postInfo._id
+  const url = `${process.env.NEXT_PUBLIC_SERVER_DOMAIN}/posts/${post._id}`;
+  const [updateResult, setUpdateResult] = useState({
+    type: "",
+    message: ''
+  })
+const {
+  mutate: updatePost,
+  isLoading: updating,
+  isSuccess,
+} = useMutation({
+  mutationFn: async (values: UpdatePost) => {
+    const response = await fetch(url, {
+      method: "PATCH",
+      headers:  {
+        "Content-type": 'application/json'
+      },
+      credentials: "include",
+      body: JSON.stringify(values),
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      if (response.status === 403 || response.status === 404) {
+        setUpdateResult({ type: "Error", message: data.message})
+      }
+    }
+    else setUpdateResult({ type: "Success", message: "Message Updated Successful" });
+    return data;
+  },
+});
 
-      {isEditing ? (
-        <EditMode
-        post={postInfo}
-        setPost={setPostInfo}
-        postChanged={postChanged}
-        />
+
+  const saveToDatabase = async (post: Post) => {
+    const updatePostValues = {
+      id: post._id,
+      title: post.title,
+      content: post.content,
+    }
+    if (confirm("Are you sure you want to update the post?")) {
+      setUpdateResult({type: "Success", message: "Loading"})
+      updatePost(updatePostValues)
+    }
+  }
+  return (
+    <div className="flex flex-col justify-center py-6 gap-4 px-4">
+      <div className="max-w-[1000px] flex-1 ">
+        {isEditing ? (
+          <EditMode
+            post={postInfo}
+            setPost={setPostInfo}
+            postChanged={postChanged}
+          />
         ) : (
           <ViewMode post={postInfo} />
-          )}
+        )}
 
-      <div className="Buttons flex gap-4 mt-4">
-        <Button variant={"destructive"} onClick={deletePost}>
-          Delete
-        </Button>
-        <Button
-          variant={!isEditing ? "default" : "accepted"}
-          onClick={setIsEditing.bind(null, !isEditing)}
+        <div className="Buttons flex gap-4 mt-4">
+          <Button variant={"destructive"} onClick={deletePost}>
+            Delete
+          </Button>
+          <Button
+            variant={!isEditing ? "default" : "accepted"}
+            onClick={setIsEditing.bind(null, !isEditing)}
           >
-          {!isEditing ? "Edit" : "Done"}
-        </Button>
-        {postChanged && !isEditing && (
-          <Button className="bg-green-600">Publish</Button>
+            {!isEditing ? "Edit" : "Cancel"}
+          </Button>
+          {postChanged && isEditing && (
+            <Button
+              onClick={() => {
+                saveToDatabase(postInfo);
+                setIsEditing(!isEditing);
+              }}
+              className="bg-green-600"
+            >
+              Save
+            </Button>
           )}
+        </div>
       </div>
-          </div>
+      {updateResult.type && (
+        <Alert variant={updateResult.type === "Error" ? "destructive" : "default"}>
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>{updateResult.type}</AlertTitle>
+          <AlertDescription>{updateResult.message}</AlertDescription>
+        </Alert>
+      )}
     </div>
   );
 
