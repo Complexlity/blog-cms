@@ -12,6 +12,7 @@ import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert'
 import { AlertCircle } from 'lucide-react'
 
 export default function SinglePost({ params }: { params: { id: string } }) {
+  const [deleteError, setDeleteError] = useState('')
   const id = params.id
   const router = useRouter()
   const url = `${process.env.NEXT_PUBLIC_SERVER_DOMAIN}/posts/${id}`
@@ -34,15 +35,14 @@ export default function SinglePost({ params }: { params: { id: string } }) {
       );
       const data = await response.json()
       if (!response.ok) {
-        if (response.status === 403) {
+        if (response.status === 403 || response.status === 401) {
+          setDeleteError(data.message)
             throw new Error(data.message)
-          }
         }
+      }
+      router.push('/posts')
       return data
     },
-    onSuccess: () => {
-      router.push('/posts')
-    }
   })
   async function deletePost() {
     if (confirm("Do you want to delete")) {
@@ -54,8 +54,17 @@ export default function SinglePost({ params }: { params: { id: string } }) {
 
 
   if (post) {
-      return (
-           <PostElement post={post} deletePost={deletePost}/>
+    return (
+        <>
+        <PostElement post={post} deletePost={deletePost} />
+        {deleteError && (
+          <Alert variant={"destructive"}>
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Error</AlertTitle>
+          <AlertDescription>{deleteError}</AlertDescription>
+        </Alert>
+      )}
+      </>
       );
   }
   }
