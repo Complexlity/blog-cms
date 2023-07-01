@@ -10,7 +10,7 @@ const POSTS = () => {
     queryKey: 'posts',
     queryFn: async () => {
       const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_DOMAIN}/posts`)
-      const posts = res.json()
+      const posts = await res.json()
       return posts as unknown as Post[]
     }
   })
