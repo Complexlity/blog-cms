@@ -87,7 +87,7 @@ export default function CreateForm() {
 
     if (!response.ok) {
       if (response.status == 403) {
-        throw new Error("You need to Login to Create")
+        throw new Error("You need to Login to Create Posts")
       }
     }
     // form.reset();
@@ -105,6 +105,7 @@ export default function CreateForm() {
       )}
       <Form {...form}>
         <form
+          //@ts-ignore
           onSubmit={form.handleSubmit(mutate)}
           className="space-y-4 mx-auto w-[500px] p-4 rounded-lg shadow-md border-gray- border-2"
         >
