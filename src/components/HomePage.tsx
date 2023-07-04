@@ -12,6 +12,7 @@ export default function HomePage() {
       <ul>
         <Link href="/posts">Posts</Link>
         <Link href="/create">Create</Link>
+        <Link href="/admin">Admin</Link>
       </ul>
     </>
 

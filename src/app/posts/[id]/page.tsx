@@ -4,12 +4,13 @@
 import { Input } from '@/components/ui/input'
 import { Post } from '@/lib/types'
 import { useRouter } from 'next/navigation'
-import { Dispatch, SetStateAction, useState } from 'react'
+import { Dispatch, MouseEventHandler, SetStateAction, useState } from 'react'
 import { useMutation, useQuery } from 'react-query'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert'
 import { AlertCircle } from 'lucide-react'
+import axios from 'axios'
 
 export default function SinglePost({ params }: { params: { id: string } }) {
   const [deleteError, setDeleteError] = useState('')
@@ -70,9 +71,9 @@ export default function SinglePost({ params }: { params: { id: string } }) {
   }
 
 type UpdatePost = {
-  id: string,
   title: string,
   content: string
+
 }
 
 
@@ -114,7 +115,6 @@ const {
 
   const saveToDatabase = async (post: Post) => {
     const updatePostValues = {
-      id: post._id,
       title: post.title,
       content: post.content,
     }
@@ -123,6 +123,17 @@ const {
       updatePost(updatePostValues)
     }
   }
+  async function togglePublish(e: any) {
+    setPostInfo({ ...postInfo, published: !postInfo.published });
+    e.target.disabled = true;
+    await axios.patch(
+      url,
+      { published: !post.published },
+      { withCredentials: true }
+    );
+    e.target.disabled = false;
+  }
+
   return (
     <div className="flex flex-col justify-center py-6 gap-4 px-4">
       <div className="max-w-[1000px] flex-1 ">
@@ -136,16 +147,20 @@ const {
           <ViewMode post={postInfo} />
         )}
 
+
+
         <div className="Buttons flex gap-4 mt-4">
           <Button variant={"destructive"} onClick={deletePost}>
             Delete
           </Button>
           <Button
-            variant={!isEditing ? "default" : "accepted"}
+            variant={!isEditing ? "outline" : "accepted"}
             onClick={setIsEditing.bind(null, !isEditing)}
           >
             {!isEditing ? "Edit" : "Cancel"}
           </Button>
+          {!isEditing ? <Button onClick={togglePublish} className={postInfo.published ? "" : `bg-green-700 hover:bg-green-700/80`}>{postInfo.published ? "Unpublish" : "Publish"}</Button>: null}
+
           {postChanged && isEditing && (
             <Button
               onClick={() => {
@@ -160,7 +175,9 @@ const {
         </div>
       </div>
       {updateResult.type && (
-        <Alert variant={updateResult.type === "Error" ? "destructive" : "default"}>
+        <Alert
+          variant={updateResult.type === "Error" ? "destructive" : "default"}
+        >
           <AlertCircle className="h-4 w-4" />
           <AlertTitle>{updateResult.type}</AlertTitle>
           <AlertDescription>{updateResult.message}</AlertDescription>

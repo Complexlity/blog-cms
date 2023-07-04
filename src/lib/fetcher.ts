@@ -10,11 +10,7 @@ const fetcher = async<T>(url: string, headers = {}, method = "GET", values: any 
       credentials: "include",
   body: JSON.stringify(values)
 });
-
-    if (method === 'POST') return response
-
-    const data = response.json()
-    return data
+    return response
 
   } catch (e) {
     return null;
